@@ -1,0 +1,8 @@
+path: input/hdhyundai-ai-challenge/
+encoder: resource/encoder/
+target: power_consumption
+train: train.csv
+test: test.csv
+building_info: building_info.csv
+submit: sample_submission.csv
+n_splits: 5

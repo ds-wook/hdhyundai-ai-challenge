@@ -1,0 +1,25 @@
+drop_features:
+  - solar_power_capacity
+  - ess_capacity
+  - pcs_capacity
+  - num_date_time
+  - date_time
+categorical_features:
+  - building_type
+  - hour
+  - month
+  - weekday
+  - holiday
+  - lunch_hour
+  - dinner_hour
+  - lunch_hour2
+  - dinner_hour2
+  - heat_index
+  - cluster
+numerical_features:
+  - temperature
+  - rainfall
+  - windspeed
+  - humidity
+  - total_area
+  - cooling_area
