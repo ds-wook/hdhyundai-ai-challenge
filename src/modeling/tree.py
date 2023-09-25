@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import lightgbm as lgb
+import numpy as np
 import pandas as pd
 import xgboost as xgb
 from catboost import CatBoostRegressor, Pool
@@ -13,7 +14,13 @@ class XGBoostTrainer(BaseModel):
     def __init__(self, config: DictConfig):
         super().__init__(config)
 
-    def _fit(self, X_train: pd.DataFrame, y_train: pd.Series, X_valid: pd.DataFrame, y_valid: pd.Series) -> xgb.Booster:
+    def _fit(
+        self,
+        X_train: pd.DataFrame | np.ndarray,
+        y_train: pd.Series | np.ndarray,
+        X_valid: pd.DataFrame | np.ndarray | None = None,
+        y_valid: pd.Series | np.ndarray | None = None,
+    ) -> xgb.Booster:
         dtrain = xgb.DMatrix(X_train, y_train, enable_categorical=True)
         dvalid = xgb.DMatrix(X_valid, y_valid, enable_categorical=True)
 
@@ -35,7 +42,11 @@ class CatBoostTrainer(BaseModel):
         super().__init__(config)
 
     def _fit(
-        self, X_train: pd.DataFrame, y_train: pd.Series, X_valid: pd.DataFrame, y_valid: pd.Series
+        self,
+        X_train: pd.DataFrame | np.ndarray,
+        y_train: pd.Series | np.ndarray,
+        X_valid: pd.DataFrame | np.ndarray | None = None,
+        y_valid: pd.Series | np.ndarray | None = None,
     ) -> CatBoostRegressor:
         train_set = Pool(X_train, y_train, cat_features=self.config.features.categorical_features)
         valid_set = Pool(X_valid, y_valid, cat_features=self.config.features.categorical_features)
@@ -60,7 +71,13 @@ class LightGBMTrainer(BaseModel):
     def __init__(self, config: DictConfig):
         super().__init__(config)
 
-    def _fit(self, X_train: pd.DataFrame, y_train: pd.Series, X_valid: pd.DataFrame, y_valid: pd.Series) -> lgb.Booster:
+    def _fit(
+        self,
+        X_train: pd.DataFrame | np.ndarray,
+        y_train: pd.Series | np.ndarray,
+        X_valid: pd.DataFrame | np.ndarray | None = None,
+        y_valid: pd.Series | np.ndarray | None = None,
+    ) -> lgb.Booster:
         train_set = lgb.Dataset(X_train, y_train, categorical_feature=self.config.features.categorical_features)
         valid_set = lgb.Dataset(X_valid, y_valid, categorical_feature=self.config.features.categorical_features)
 
