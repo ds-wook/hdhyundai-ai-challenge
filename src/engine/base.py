@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import bisect
 import pickle
 from pathlib import Path
 
@@ -55,6 +56,7 @@ class BaseFeatureEngineer:
             le_classes_set = set(le.classes_)
             test[cat_feature] = test[cat_feature].map(lambda s: "-1" if s not in le_classes_set else s)
             le_classes = le.classes_.tolist()
+            bisect.insort_left(le_classes, "-1")
             le.classes_ = np.array(le_classes)
             test[cat_feature] = le.transform(test[cat_feature].astype(str))
 
