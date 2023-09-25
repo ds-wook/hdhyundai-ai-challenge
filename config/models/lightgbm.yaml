@@ -1,5 +1,5 @@
 params:
-  objective: regression_l1
+  objective: tweedie
   learning_rate: 0.05
   num_leaves: 100
   min_data_in_leaf: 100
@@ -7,12 +7,13 @@ params:
   feature_fraction: 0.8
   lambda_l1: 0.1
   lambda_l2: 0.1
+  metric: mae
   seed: 42
   verbose: -1
   n_jobs: -1
 path: resources/models/
 name: lightgbm
-results: 5fold-kfold-lightgbm
+results: 5fold-kfold-tweedie-lightgbm
 early_stopping_rounds: 100
 num_boost_round: 10000
-verbose_eval: 100
+verbose_eval: 500

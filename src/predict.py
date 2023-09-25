@@ -42,7 +42,7 @@ def inference_models(cfg: DictConfig, test_x: pd.DataFrame) -> np.ndarray:
         pred = np.where(model_pred < 0, 0, model_pred)
         ensemble_preds.append(pred)
 
-    predictions = np.mean(ensemble_preds, axis=0)
+    predictions = np.median(ensemble_preds, axis=0)
 
     return predictions
 
@@ -54,7 +54,7 @@ def _main(cfg: DictConfig):
 
     preds = inference_models(cfg, test_x)
 
-    submit["prediction"] = preds
+    submit[cfg.data.target] = preds
 
     submit.to_csv(Path(cfg.output.path) / f"{cfg.models.results}.csv", index=False)
 

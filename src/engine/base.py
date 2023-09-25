@@ -28,7 +28,7 @@ class BaseFeatureEngineer:
 
         path = Path(get_original_cwd()) / self.cfg.data.encoder
 
-        for cat_feature in tqdm(self.cfg.data.categorical_features, leave=False):
+        for cat_feature in tqdm(self.cfg.data.categorical_features, desc="Encoding train data", leave=False):
             le = LabelEncoder()
             train[cat_feature] = le.fit_transform(train[cat_feature])
 
@@ -49,7 +49,7 @@ class BaseFeatureEngineer:
 
         path = Path(get_original_cwd()) / self.cfg.data.encoder
 
-        for cat_feature in tqdm(self.cfg.data.categorical_features, leave=False):
+        for cat_feature in tqdm(self.cfg.data.categorical_features, desc="Encoding test data", leave=False):
             with open(path / f"{cat_feature}.pkl", "rb") as f:
                 le = pickle.load(f)
 

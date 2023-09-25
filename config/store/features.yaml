@@ -5,6 +5,19 @@ categorical_features:
   - ARI_CO
   - ARI_PO
   - SHIP_TYPE_CATEGORY
-  - ID
-  - SHIPMANAGER
-  - FLAG
+selected_features:
+- DIST
+- PORT_SIZE
+- month
+- BDI_ADJ
+- DUBAI
+- DEADWEIGHT
+- day
+- year
+- GT
+- ARI_CO
+- BUILT
+- ARI_PO
+- LENGTH
+- weekday
+- SHIP_TYPE_CATEGORY
