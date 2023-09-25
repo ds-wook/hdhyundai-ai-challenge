@@ -3,6 +3,7 @@ from __future__ import annotations
 import pickle
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 from hydra.utils import get_original_cwd
 from omegaconf import DictConfig
@@ -25,10 +26,11 @@ class BaseFeatureEngineer:
         """
 
         path = Path(get_original_cwd()) / self.cfg.data.encoder
-        le = LabelEncoder()
 
         for cat_feature in tqdm(self.cfg.data.categorical_features, leave=False):
+            le = LabelEncoder()
             train[cat_feature] = le.fit_transform(train[cat_feature])
+
             with open(path / f"{cat_feature}.pkl", "wb") as f:
                 pickle.dump(le, f)
 
@@ -49,6 +51,11 @@ class BaseFeatureEngineer:
         for cat_feature in tqdm(self.cfg.data.categorical_features, leave=False):
             with open(path / f"{cat_feature}.pkl", "rb") as f:
                 le = pickle.load(f)
-            test[cat_feature] = le.transform(test[cat_feature])
+
+            le_classes_set = set(le.classes_)
+            test[cat_feature] = test[cat_feature].map(lambda s: "-1" if s not in le_classes_set else s)
+            le_classes = le.classes_.tolist()
+            le.classes_ = np.array(le_classes)
+            test[cat_feature] = le.transform(test[cat_feature].astype(str))
 
         return test

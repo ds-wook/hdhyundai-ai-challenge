@@ -29,30 +29,30 @@ def inference_models(cfg: DictConfig, test_x: pd.DataFrame) -> np.ndarray:
         result = pickle.load(output)
 
     folds = len(result.models)
-    preds = np.zeros((test_x.shape[0],))
+    ensemble_preds = []
 
     for model in tqdm(result.models.values(), total=folds):
-        preds += (
-            model.predict(test_x) / folds
+        model_pred = (
+            model.predict(test_x)
             if isinstance(model, lgb.Booster)
-            else model.predict(xgb.DMatrix(test_x)) / folds
+            else model.predict(xgb.DMatrix(test_x))
             if isinstance(model, xgb.Booster)
-            else model.predict(test_x)[:, 1] / folds
+            else model.predict(test_x)[:, 1]
         )
+        pred = np.where(model_pred < 0, 0, model_pred)
+        ensemble_preds.append(pred)
 
-    assert len(preds) == len(test_x)
+    predictions = np.mean(ensemble_preds, axis=0)
 
-    return preds
+    return predictions
 
 
-@hydra.main(config_path="../config/", config_name="predict")
+@hydra.main(config_path="../config/", config_name="predict", version_base="1.3.1")
 def _main(cfg: DictConfig):
     test_x = load_test_dataset(cfg)
-    folds = range(cfg.data.n_splits)
     submit = pd.read_csv(Path(cfg.data.path) / cfg.data.submit)
 
-    for fold in tqdm(folds, leave=False):
-        preds = inference_models(cfg, test_x)
+    preds = inference_models(cfg, test_x)
 
     submit["prediction"] = preds
 

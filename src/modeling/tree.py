@@ -11,8 +11,8 @@ from modeling.base import BaseModel
 
 
 class XGBoostTrainer(BaseModel):
-    def __init__(self, config: DictConfig):
-        super().__init__(config)
+    def __init__(self, cfg: DictConfig):
+        super().__init__(cfg)
 
     def _fit(
         self,
@@ -25,21 +25,20 @@ class XGBoostTrainer(BaseModel):
         dvalid = xgb.DMatrix(X_valid, y_valid, enable_categorical=True)
 
         model = xgb.train(
-            dict(self.config.models.params),
+            dict(self.cfg.models.params),
             dtrain=dtrain,
             evals=[(dtrain, "train"), (dvalid, "eval")],
-            num_boost_round=self.config.models.num_boost_round,
-            early_stopping_rounds=self.config.models.early_stopping_rounds,
-            verbose_eval=self.config.models.verbose_eval,
-            feval=self._evaluation,
+            num_boost_round=self.cfg.models.num_boost_round,
+            early_stopping_rounds=self.cfg.models.early_stopping_rounds,
+            verbose_eval=self.cfg.models.verbose_eval,
         )
 
         return model
 
 
 class CatBoostTrainer(BaseModel):
-    def __init__(self, config: DictConfig):
-        super().__init__(config)
+    def __init__(self, cfg: DictConfig):
+        super().__init__(cfg)
 
     def _fit(
         self,
@@ -48,28 +47,28 @@ class CatBoostTrainer(BaseModel):
         X_valid: pd.DataFrame | np.ndarray | None = None,
         y_valid: pd.Series | np.ndarray | None = None,
     ) -> CatBoostRegressor:
-        train_set = Pool(X_train, y_train, cat_features=self.config.features.categorical_features)
-        valid_set = Pool(X_valid, y_valid, cat_features=self.config.features.categorical_features)
+        train_set = Pool(X_train, y_train, cat_features=self.cfg.store.categorical_features)
+        valid_set = Pool(X_valid, y_valid, cat_features=self.cfg.store.categorical_features)
 
         model = CatBoostRegressor(
-            cat_features=self.config.features.categorical_features,
-            random_state=self.config.models.seed,
-            **self.config.models.params,
+            cat_features=self.cfg.features.categorical_features,
+            random_state=self.cfg.models.seed,
+            **self.cfg.models.params,
         )
 
         model.fit(
             train_set,
             eval_set=valid_set,
-            verbose_eval=self.config.models.verbose_eval,
-            early_stopping_rounds=self.config.models.early_stopping_rounds,
+            verbose_eval=self.cfg.models.verbose_eval,
+            early_stopping_rounds=self.cfg.models.early_stopping_rounds,
         )
 
         return model
 
 
 class LightGBMTrainer(BaseModel):
-    def __init__(self, config: DictConfig):
-        super().__init__(config)
+    def __init__(self, cfg: DictConfig):
+        super().__init__(cfg)
 
     def _fit(
         self,
@@ -78,18 +77,17 @@ class LightGBMTrainer(BaseModel):
         X_valid: pd.DataFrame | np.ndarray | None = None,
         y_valid: pd.Series | np.ndarray | None = None,
     ) -> lgb.Booster:
-        train_set = lgb.Dataset(X_train, y_train, categorical_feature=self.config.features.categorical_features)
-        valid_set = lgb.Dataset(X_valid, y_valid, categorical_feature=self.config.features.categorical_features)
+        train_set = lgb.Dataset(X_train, y_train, categorical_feature=self.cfg.store.categorical_features)
+        valid_set = lgb.Dataset(X_valid, y_valid, categorical_feature=self.cfg.store.categorical_features)
 
         model = lgb.train(
             train_set=train_set,
             valid_sets=[train_set, valid_set],
-            params=dict(self.config.models.params),
-            num_boost_round=self.config.models.num_boost_round,
-            feval=self._evaluation,
+            params=dict(self.cfg.models.params),
+            num_boost_round=self.cfg.models.num_boost_round,
             callbacks=[
-                lgb.log_evaluation(self.config.models.verbose_eval),
-                lgb.early_stopping(self.config.models.early_stopping_rounds),
+                lgb.log_evaluation(self.cfg.models.verbose_eval),
+                lgb.early_stopping(self.cfg.models.early_stopping_rounds),
             ],
         )
 

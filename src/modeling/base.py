@@ -54,7 +54,7 @@ class BaseModel(metaclass=ABCMeta):
     def run_cv_training(self, X: pd.DataFrame | np.ndarray, y: pd.Series | np.ndarray) -> NoReturn:
         oof_preds = np.zeros(X.shape[0])
         models = {}
-        kfold = KFold(n_splits=self.cfg.data.n_splits, random_state=self.cfg.data.seed)
+        kfold = KFold(n_splits=self.cfg.data.n_splits, shuffle=True, random_state=self.cfg.data.seed)
 
         for fold, (train_idx, valid_idx) in enumerate(kfold.split(X, y)):
             X_train, X_valid = X.iloc[train_idx], X.iloc[valid_idx]

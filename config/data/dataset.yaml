@@ -1,8 +1,15 @@
 path: input/hdhyundai-ai-challenge/
-encoder: resource/encoder/
-target: power_consumption
-train: train.csv
-test: test.csv
-building_info: building_info.csv
+encoder: resources/encoder/
+target: CI_HOUR
+train: train
+test: test
 submit: sample_submission.csv
 n_splits: 5
+seed: 42
+categorical_features:
+  - ARI_CO
+  - ARI_PO
+  - SHIP_TYPE_CATEGORY
+  - ID
+  - SHIPMANAGER
+  - FLAG

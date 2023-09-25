@@ -10,7 +10,7 @@ from data.dataset import load_train_dataset
 from modeling.tree import CatBoostTrainer, LightGBMTrainer, XGBoostTrainer
 
 
-@hydra.main(config_path="../config/", config_name="train")
+@hydra.main(config_path="../config/", config_name="train", version_base="1.3.1")
 def _main(cfg: DictConfig):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UserWarning)
@@ -20,7 +20,7 @@ def _main(cfg: DictConfig):
 
         if cfg.models.name == "lightgbm":
             # train model
-            lgb_trainer = LightGBMTrainer(config=cfg)
+            lgb_trainer = LightGBMTrainer(cfg)
             lgb_trainer.run_cv_training(train_x, train_y)
 
             # save model
@@ -28,7 +28,7 @@ def _main(cfg: DictConfig):
 
         elif cfg.models.name == "catboost":
             # train model
-            cb_trainer = CatBoostTrainer(config=cfg)
+            cb_trainer = CatBoostTrainer(cfg)
             cb_trainer.run_cv_training(train_x, train_y)
 
             # save model
@@ -36,7 +36,7 @@ def _main(cfg: DictConfig):
 
         elif cfg.models.name == "xgboost":
             # train model
-            xgb_trainer = XGBoostTrainer(config=cfg)
+            xgb_trainer = XGBoostTrainer(cfg)
             xgb_trainer.run_cv_training(train_x, train_y)
 
             # save model

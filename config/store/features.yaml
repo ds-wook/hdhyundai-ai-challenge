@@ -1,0 +1,10 @@
+drop_features:
+  - ATA
+  - SAMPLE_ID
+categorical_features:
+  - ARI_CO
+  - ARI_PO
+  - SHIP_TYPE_CATEGORY
+  - ID
+  - SHIPMANAGER
+  - FLAG
