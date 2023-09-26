@@ -165,3 +165,4 @@ output/*
 !output/.gitkeep
 resources/*
 !resources/.gitkeep
+wandb/*

@@ -39,7 +39,7 @@ def inference_models(cfg: DictConfig, test_x: pd.DataFrame) -> np.ndarray:
             if isinstance(model, xgb.Booster)
             else model.predict(test_x)[:, 1]
         )
-        pred = np.where(model_pred < 0, 0, model_pred)
+        pred = np.where(model_pred < 0.01, 0, model_pred)
         ensemble_preds.append(pred)
 
     predictions = np.median(ensemble_preds, axis=0)
@@ -50,6 +50,7 @@ def inference_models(cfg: DictConfig, test_x: pd.DataFrame) -> np.ndarray:
 @hydra.main(config_path="../config/", config_name="predict", version_base="1.3.1")
 def _main(cfg: DictConfig):
     test_x = load_test_dataset(cfg)
+    test_x = test_x[cfg.store.selected_features]
     submit = pd.read_csv(Path(cfg.data.path) / cfg.data.submit)
 
     preds = inference_models(cfg, test_x)

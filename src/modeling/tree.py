@@ -3,6 +3,9 @@ from __future__ import annotations
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
+import wandb.catboost as wandb_cb
+import wandb.lightgbm as wandb_lgb
+import wandb.xgboost as wandb_xgb
 import xgboost as xgb
 from catboost import CatBoostRegressor, Pool
 from omegaconf import DictConfig
@@ -21,8 +24,8 @@ class XGBoostTrainer(BaseModel):
         X_valid: pd.DataFrame | np.ndarray | None = None,
         y_valid: pd.Series | np.ndarray | None = None,
     ) -> xgb.Booster:
-        dtrain = xgb.DMatrix(X_train, y_train, enable_categorical=True)
-        dvalid = xgb.DMatrix(X_valid, y_valid, enable_categorical=True)
+        dtrain = xgb.DMatrix(X_train, y_train)
+        dvalid = xgb.DMatrix(X_valid, y_valid)
 
         model = xgb.train(
             dict(self.cfg.models.params),
@@ -31,6 +34,7 @@ class XGBoostTrainer(BaseModel):
             num_boost_round=self.cfg.models.num_boost_round,
             early_stopping_rounds=self.cfg.models.early_stopping_rounds,
             verbose_eval=self.cfg.models.verbose_eval,
+            callbacks=[wandb_xgb.WandbCallback()],
         )
 
         return model
@@ -51,7 +55,7 @@ class CatBoostTrainer(BaseModel):
         valid_set = Pool(X_valid, y_valid, cat_features=self.cfg.store.categorical_features)
 
         model = CatBoostRegressor(
-            cat_features=self.cfg.features.categorical_features,
+            cat_features=self.cfg.store.categorical_features,
             random_state=self.cfg.models.seed,
             **self.cfg.models.params,
         )
@@ -61,6 +65,7 @@ class CatBoostTrainer(BaseModel):
             eval_set=valid_set,
             verbose_eval=self.cfg.models.verbose_eval,
             early_stopping_rounds=self.cfg.models.early_stopping_rounds,
+            callbacks=[wandb_cb.WandbCallback()],
         )
 
         return model
@@ -88,6 +93,7 @@ class LightGBMTrainer(BaseModel):
             callbacks=[
                 lgb.log_evaluation(self.cfg.models.verbose_eval),
                 lgb.early_stopping(self.cfg.models.early_stopping_rounds),
+                wandb_lgb.wandb_callback(),
             ],
         )
 

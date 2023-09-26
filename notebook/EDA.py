@@ -11,7 +11,7 @@ train = pd.read_csv("../input/hdhyundai-ai-challenge/train.csv")
 train.info()
 # %%
 
-train["CI_HOUR"]
+sns.histplot(data=np.log1p(train["CI_HOUR"]), kde=True)
 
 
 # %%
@@ -38,27 +38,10 @@ def postprocess(cfg, train: pd.DataFrame, preds: np.ndarray) -> np.ndarray:
 
 
 # %%
-import matplotlib.pyplot as plt
-import pandas as pd
-from lightgbm import LGBMRegressor
+train.groupby(["ID", "ATA"])[["AIR_TEMPERATURE", "U_WIND", "V_WIND"]].agg(["count", "mean", "std", "min", "max"])
 
-
-def train_and_evaluate(model: LGBMRegressor, model_name: str, X_train: pd.DataFrame, y_train: pd.Series):
-    print(f"Model Tune for {model_name}.")
-    model.fit(X_train, y_train)
-
-    feature_importances = model.feature_importances_
-    sorted_idx = feature_importances.argsort()
-
-    plt.figure(figsize=(10, len(X_train.columns)))
-    plt.title(f"Feature Importances ({model_name})")
-    plt.barh(range(X_train.shape[1]), feature_importances[sorted_idx], align="center")
-    plt.yticks(range(X_train.shape[1]), X_train.columns[sorted_idx])
-    plt.xlabel("Importance")
-    plt.show()
-
-    return feature_importances
-
-
-
+# %%
+train[["ID", "ATA"]].head()
+# %%
+train.loc[train["ID"] == "A111164"]
 # %%

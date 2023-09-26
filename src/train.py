@@ -16,13 +16,13 @@ def _main(cfg: DictConfig):
         warnings.filterwarnings("ignore", category=UserWarning)
         save_path = Path(cfg.models.path)
 
-        train_x, train_y = load_train_dataset(cfg)
+        train_x, train_y, groups = load_train_dataset(cfg)
         train_x = train_x[cfg.store.selected_features]
 
         if cfg.models.name == "lightgbm":
             # train model
             lgb_trainer = LightGBMTrainer(cfg)
-            lgb_trainer.run_cv_training(train_x, train_y)
+            lgb_trainer.run_cv_training(train_x, train_y, groups)
 
             # save model
             lgb_trainer.save_model(save_path / f"{cfg.models.results}.pkl")
@@ -30,7 +30,7 @@ def _main(cfg: DictConfig):
         elif cfg.models.name == "catboost":
             # train model
             cb_trainer = CatBoostTrainer(cfg)
-            cb_trainer.run_cv_training(train_x, train_y)
+            cb_trainer.run_cv_training(train_x, train_y, groups)
 
             # save model
             cb_trainer.save_model(save_path / f"{cfg.models.results}.pkl")
@@ -38,7 +38,7 @@ def _main(cfg: DictConfig):
         elif cfg.models.name == "xgboost":
             # train model
             xgb_trainer = XGBoostTrainer(cfg)
-            xgb_trainer.run_cv_training(train_x, train_y)
+            xgb_trainer.run_cv_training(train_x, train_y, groups)
 
             # save model
             xgb_trainer.save_model(save_path / f"{cfg.models.results}.pkl")

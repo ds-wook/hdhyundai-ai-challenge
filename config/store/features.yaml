@@ -1,23 +1,31 @@
 drop_features:
-  - ATA
-  - SAMPLE_ID
+- ATA
+- SAMPLE_ID
 categorical_features:
-  - ARI_CO
-  - ARI_PO
-  - SHIP_TYPE_CATEGORY
+- ARI_CO
+- ARI_PO
+- SHIP_TYPE_CATEGORY
 selected_features:
 - DIST
 - PORT_SIZE
-- month
-- BDI_ADJ
-- DUBAI
-- DEADWEIGHT
-- day
-- year
-- GT
-- ARI_CO
-- BUILT
-- ARI_PO
-- LENGTH
+- ARI_CO_count
 - weekday
+- month
 - SHIP_TYPE_CATEGORY
+- BDI_ADJ
+- year
+- DUBAI
+- ARI_CO
+- BRENT
+- WTI
+- year_min
+- ARI_PO
+- year_std
+- AIR_TEMPERATURE
+- DIST_diff1
+- DEADWEIGHT_max
+- PORT_SIZE_min
+- DUBAI_std
+- weekday_mean
+- DEADWEIGHT_min
+- BUILT_max

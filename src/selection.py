@@ -4,26 +4,28 @@ import warnings
 from pathlib import Path
 
 import hydra
-from lightgbm import LGBMRegressor
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 
-from data.dataset import load_train_dataset
-from utils.plot import train_and_evaluate
+from data.dataset import load_test_dataset, load_train_dataset
+from engine.select import explaniable_selected_features
 
 
 @hydra.main(config_path="../config/", config_name="train", version_base="1.3.1")
 def _main(cfg: DictConfig):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UserWarning)
-        train_x, train_y = load_train_dataset(cfg)
-        save_path = Path("output")
+        train_x, train_y, _ = load_train_dataset(cfg)
+        test_x = load_test_dataset(cfg)
+        save_path = Path("config/store/")
 
         # Model Tune for LGBM
-        lgbm_feature_importances = train_and_evaluate(LGBMRegressor(), train_x, train_y)
-        lgbm_feature_importances = lgbm_feature_importances.reset_index()
-        lgbm_feature_importances.columns = ["feature", "importance"]
-        lgbm_feature_importances = lgbm_feature_importances.sort_values(by="importance", ascending=False)
-        lgbm_feature_importances.to_csv(save_path / "lgbm_feature_importances.csv", index=False)
+        lgbm_feature_importances = explaniable_selected_features(train_x, train_y, test_x)
+        boosting_shap_col = lgbm_feature_importances.column_name.values.tolist()
+
+        basic_features = OmegaConf.load("config/store/features.yaml")
+        basic_features["selected_features"] = boosting_shap_col
+
+        OmegaConf.save(basic_features, save_path / "features.yaml")
 
 
 if __name__ == "__main__":

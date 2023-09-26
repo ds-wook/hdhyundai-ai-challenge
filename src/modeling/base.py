@@ -14,7 +14,9 @@ import xgboost as xgb
 from omegaconf import DictConfig
 from pytorch_tabnet.tab_model import TabNetRegressor
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import KFold
+from sklearn.model_selection import GroupKFold
+
+import wandb
 
 
 @dataclass
@@ -52,29 +54,31 @@ class BaseModel(metaclass=ABCMeta):
 
         return model
 
-    def run_cv_training(self, X: pd.DataFrame | np.ndarray, y: pd.Series | np.ndarray) -> NoReturn:
+    def run_cv_training(self, X: pd.DataFrame | np.ndarray, y: pd.Series | np.ndarray, groups: pd.Series) -> NoReturn:
         oof_preds = np.zeros(X.shape[0])
         models = {}
-        kfold = KFold(n_splits=self.cfg.data.n_splits, shuffle=True, random_state=self.cfg.data.seed)
+        kfold = GroupKFold(n_splits=self.cfg.data.n_splits)
 
-        for fold, (train_idx, valid_idx) in enumerate(kfold.split(X, y)):
-            X_train, X_valid = X.iloc[train_idx], X.iloc[valid_idx]
-            y_train, y_valid = y.iloc[train_idx], y.iloc[valid_idx]
+        for fold, (train_idx, valid_idx) in enumerate(kfold.split(X=X, groups=groups), 1):
+            with wandb.init(project=self.cfg.experiment.project, name=f"{self.cfg.models.results}_fold_{fold}"):
+                X_train, X_valid = X.iloc[train_idx], X.iloc[valid_idx]
+                y_train, y_valid = y.iloc[train_idx], y.iloc[valid_idx]
 
-            model = self.fit(X_train, y_train, X_valid, y_valid)
-            oof_preds[valid_idx] = (
-                model.predict(X_valid)
-                if isinstance(model, lgb.Booster)
-                else model.predict(xgb.DMatrix(X_valid, enable_categorical=True))
-                if isinstance(model, xgb.Booster)
-                else model.predict(X_valid.to_numpy()).reshape(-1)
-                if isinstance(model, TabNetRegressor)
-                else model.predict(X_valid)
-            )
-            models[f"fold_{fold}"] = model
+                model = self.fit(X_train, y_train, X_valid, y_valid)
+                oof_preds[valid_idx] = (
+                    model.predict(X_valid)
+                    if isinstance(model, lgb.Booster)
+                    else model.predict(xgb.DMatrix(X_valid))
+                    if isinstance(model, xgb.Booster)
+                    else model.predict(X_valid.to_numpy()).reshape(-1)
+                    if isinstance(model, TabNetRegressor)
+                    else model.predict(X_valid)
+                )
+                models[f"fold_{fold}"] = model
+
+                wandb.log({"Fold Score": mean_absolute_error(y_valid, oof_preds[valid_idx])})
 
             del X_train, X_valid, y_train, y_valid
             gc.collect()
 
         self.result = ModelResult(oof_preds=oof_preds, models=models)
-        print(f"CV Score: {mean_absolute_error(y, oof_preds):.4f}")
