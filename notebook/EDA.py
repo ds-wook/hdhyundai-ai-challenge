@@ -7,18 +7,10 @@ import seaborn as sns
 # %%
 
 train = pd.read_csv("../input/hdhyundai-ai-challenge/train.csv")
-
-# %%
-train.info()
-# %%
-train.head()
+test = pd.read_csv("../input/hdhyundai-ai-challenge/test.csv")
 # %%
 
 train["ID"].unique().shape
 # %%
-train.groupby(["ID"])["DIST"].mean()
-# %%
-train[train["ID"] == "A111164"]
-# %%
-train[train["ARI_PO"] == "ZAG4"]
+test["ID"].unique().shape
 # %%

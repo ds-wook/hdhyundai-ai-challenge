@@ -7,6 +7,7 @@ import hydra
 from omegaconf import DictConfig
 
 from data.dataset import load_train_dataset
+from modeling.nn import TabNetTrainer
 from modeling.tree import CatBoostTrainer, LightGBMTrainer, XGBoostTrainer
 
 
@@ -42,6 +43,15 @@ def _main(cfg: DictConfig):
 
             # save model
             xgb_trainer.save_model(save_path / f"{cfg.models.results}.pkl")
+
+        elif cfg.models.name == "tabnet":
+            train_x = train_x.fillna(0)
+            # train model
+            tabnet_trainer = TabNetTrainer(cfg)
+            tabnet_trainer.run_cv_training(train_x, train_y)
+
+            # save model
+            tabnet_trainer.save_model(save_path / f"{cfg.models.results}.pkl")
 
         else:
             raise NotImplementedError

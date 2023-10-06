@@ -18,7 +18,7 @@ eval_name:
   - train
   - valid
 eval_metric:
-  - rmse
+  - mae
 path: resources/models/
 name: tabnet
-results: cross-validation-median-tabnet-student
+results: 5fold-regression-tabnet

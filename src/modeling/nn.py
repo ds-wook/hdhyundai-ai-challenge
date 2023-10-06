@@ -57,8 +57,8 @@ class LSTM(nn.Module):
 
 
 class TabNetTrainer(BaseModel):
-    def __init__(self, config: DictConfig, cat_idxs: list[int] = [], cat_dims: list[int] = []):
-        super().__init__(config)
+    def __init__(self, cfg: DictConfig, cat_idxs: list[int] = [], cat_dims: list[int] = []):
+        super().__init__(cfg)
         self.cat_idxs = cat_idxs
         self.cat_dims = cat_dims
 
@@ -68,20 +68,20 @@ class TabNetTrainer(BaseModel):
         """method train"""
         model = TabNetRegressor(
             optimizer_fn=torch.optim.Adam,
-            optimizer_params=dict(lr=self.config.models.params.lr),
+            optimizer_params=dict(lr=self.cfg.models.params.lr),
             scheduler_params={
-                "step_size": self.config.models.params.step_size,
-                "gamma": self.config.models.params.gamma,
+                "step_size": self.cfg.models.params.step_size,
+                "gamma": self.cfg.models.params.gamma,
             },
             scheduler_fn=torch.optim.lr_scheduler.StepLR,
-            mask_type=self.config.models.params.mask_type,
-            n_steps=self.config.models.params.n_steps,
-            n_d=self.config.models.params.n_d,
-            n_a=self.config.models.params.n_a,
-            lambda_sparse=self.config.models.params.lambda_sparse,
+            mask_type=self.cfg.models.params.mask_type,
+            n_steps=self.cfg.models.params.n_steps,
+            n_d=self.cfg.models.params.n_d,
+            n_a=self.cfg.models.params.n_a,
+            lambda_sparse=self.cfg.models.params.lambda_sparse,
             cat_idxs=self.cat_idxs,
             cat_dims=self.cat_dims,
-            verbose=self.config.models.params.verbose,
+            verbose=self.cfg.models.params.verbose,
         )
 
         model.fit(
@@ -91,13 +91,13 @@ class TabNetTrainer(BaseModel):
                 (X_train.to_numpy(), y_train.to_numpy().reshape(-1, 1)),
                 (X_valid.to_numpy(), y_valid.to_numpy().reshape(-1, 1)),
             ],
-            eval_name=[*self.config.models.eval_name],
-            eval_metric=[*self.config.models.eval_metric],
-            max_epochs=self.config.models.params.max_epochs,
-            patience=self.config.models.params.patience,
-            batch_size=self.config.models.params.batch_size,
-            virtual_batch_size=self.config.models.params.virtual_batch_size,
-            num_workers=self.config.models.params.num_workers,
+            eval_name=[*self.cfg.models.eval_name],
+            eval_metric=[*self.cfg.models.eval_metric],
+            max_epochs=self.cfg.models.params.max_epochs,
+            patience=self.cfg.models.params.patience,
+            batch_size=self.cfg.models.params.batch_size,
+            virtual_batch_size=self.cfg.models.params.virtual_batch_size,
+            num_workers=self.cfg.models.params.num_workers,
             drop_last=False,
         )
 

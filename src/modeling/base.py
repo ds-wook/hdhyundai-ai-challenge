@@ -59,7 +59,7 @@ class BaseModel(metaclass=ABCMeta):
         kfold = KFold(n_splits=self.cfg.data.n_splits, shuffle=True, random_state=self.cfg.data.seed)
 
         for fold, (train_idx, valid_idx) in enumerate(kfold.split(X=X), 1):
-            with wandb.init(dir="never", project=self.cfg.experiment.project, name=f"{self.cfg.models.results}_{fold}"):
+            with wandb.init(dir="never", project=self.cfg.experiment.project, name=f"{self.cfg.models.results}-{fold}"):
                 X_train, X_valid = X.iloc[train_idx], X.iloc[valid_idx]
                 y_train, y_valid = y.iloc[train_idx], y.iloc[valid_idx]
 
