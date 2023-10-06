@@ -10,13 +10,12 @@ from typing import Any, NoReturn
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
+import wandb
 import xgboost as xgb
 from omegaconf import DictConfig
 from pytorch_tabnet.tab_model import TabNetRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.model_selection import KFold
-
-import wandb
 
 
 @dataclass
@@ -60,7 +59,7 @@ class BaseModel(metaclass=ABCMeta):
         kfold = KFold(n_splits=self.cfg.data.n_splits, shuffle=True, random_state=self.cfg.data.seed)
 
         for fold, (train_idx, valid_idx) in enumerate(kfold.split(X=X), 1):
-            with wandb.init(project=self.cfg.experiment.project, name=f"{self.cfg.models.results}_fold_{fold}"):
+            with wandb.init(dir="never", project=self.cfg.experiment.project, name=f"{self.cfg.models.results}_{fold}"):
                 X_train, X_valid = X.iloc[train_idx], X.iloc[valid_idx]
                 y_train, y_valid = y.iloc[train_idx], y.iloc[valid_idx]
 
