@@ -24,7 +24,9 @@ def _main(cfg: DictConfig):
 
         basic_features = OmegaConf.load("config/store/features.yaml")
         basic_features["selected_features"] = boosting_shap_col
-
+        basic_features["categorical_features"] = [
+            col for col in boosting_shap_col if col in [*cfg.data.categorical_features]
+        ]
         OmegaConf.save(basic_features, save_path / "features.yaml")
 
 

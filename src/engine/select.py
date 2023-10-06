@@ -1,4 +1,4 @@
-import logging
+from __future__ import annotations
 
 import numpy as np
 import pandas as pd
@@ -8,7 +8,7 @@ from lightgbm import LGBMRegressor
 
 def explaniable_selected_features(train: pd.DataFrame, label: pd.Series, test: pd.DataFrame) -> pd.DataFrame:
     model = LGBMRegressor(random_state=42)
-    logging.info(f"{model.__class__.__name__} Train Start!")
+    print(f"{model.__class__.__name__} Train Start!")
     model.fit(train, label)
     explainer = shap.TreeExplainer(model)
 
@@ -23,5 +23,6 @@ def explaniable_selected_features(train: pd.DataFrame, label: pd.Series, test: p
 
     print(f"Total {len(train.columns)} Select {len(boosting_shap_col)}")
     print(f"Select Features: {boosting_shap_col}")
+    shap.summary_plot(shap_values, test)
 
     return importance_df

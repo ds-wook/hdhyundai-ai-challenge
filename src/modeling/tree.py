@@ -97,4 +97,6 @@ class LightGBMTrainer(BaseModel):
             ],
         )
 
+        wandb_lgb.log_summary(model)
+
         return model

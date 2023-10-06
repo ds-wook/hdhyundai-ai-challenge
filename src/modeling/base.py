@@ -14,7 +14,7 @@ import xgboost as xgb
 from omegaconf import DictConfig
 from pytorch_tabnet.tab_model import TabNetRegressor
 from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import GroupKFold
+from sklearn.model_selection import KFold
 
 import wandb
 
@@ -54,12 +54,12 @@ class BaseModel(metaclass=ABCMeta):
 
         return model
 
-    def run_cv_training(self, X: pd.DataFrame | np.ndarray, y: pd.Series | np.ndarray, groups: pd.Series) -> NoReturn:
+    def run_cv_training(self, X: pd.DataFrame | np.ndarray, y: pd.Series | np.ndarray) -> NoReturn:
         oof_preds = np.zeros(X.shape[0])
         models = {}
-        kfold = GroupKFold(n_splits=self.cfg.data.n_splits)
+        kfold = KFold(n_splits=self.cfg.data.n_splits, shuffle=True, random_state=self.cfg.data.seed)
 
-        for fold, (train_idx, valid_idx) in enumerate(kfold.split(X=X, groups=groups), 1):
+        for fold, (train_idx, valid_idx) in enumerate(kfold.split(X=X), 1):
             with wandb.init(project=self.cfg.experiment.project, name=f"{self.cfg.models.results}_fold_{fold}"):
                 X_train, X_valid = X.iloc[train_idx], X.iloc[valid_idx]
                 y_train, y_valid = y.iloc[train_idx], y.iloc[valid_idx]
@@ -80,5 +80,7 @@ class BaseModel(metaclass=ABCMeta):
 
             del X_train, X_valid, y_train, y_valid
             gc.collect()
+
+        print(f"CV Score: {mean_absolute_error(y, oof_preds)}")
 
         self.result = ModelResult(oof_preds=oof_preds, models=models)

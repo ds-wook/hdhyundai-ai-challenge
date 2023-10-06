@@ -22,7 +22,7 @@ def _main(cfg: DictConfig):
         if cfg.models.name == "lightgbm":
             # train model
             lgb_trainer = LightGBMTrainer(cfg)
-            lgb_trainer.run_cv_training(train_x, train_y, groups)
+            lgb_trainer.run_cv_training(train_x, train_y)
 
             # save model
             lgb_trainer.save_model(save_path / f"{cfg.models.results}.pkl")
@@ -30,7 +30,7 @@ def _main(cfg: DictConfig):
         elif cfg.models.name == "catboost":
             # train model
             cb_trainer = CatBoostTrainer(cfg)
-            cb_trainer.run_cv_training(train_x, train_y, groups)
+            cb_trainer.run_cv_training(train_x, train_y)
 
             # save model
             cb_trainer.save_model(save_path / f"{cfg.models.results}.pkl")
@@ -38,7 +38,7 @@ def _main(cfg: DictConfig):
         elif cfg.models.name == "xgboost":
             # train model
             xgb_trainer = XGBoostTrainer(cfg)
-            xgb_trainer.run_cv_training(train_x, train_y, groups)
+            xgb_trainer.run_cv_training(train_x, train_y)
 
             # save model
             xgb_trainer.save_model(save_path / f"{cfg.models.results}.pkl")
