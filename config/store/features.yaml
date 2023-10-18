@@ -1,6 +1,9 @@
 drop_features:
 - ATA
 - SAMPLE_ID
+- AIR_TEMPERATURE
+- U_WIND
+- V_WIND
 categorical_features:
 - SHIP_TYPE_CATEGORY
 - ARI_CO
@@ -8,21 +11,17 @@ categorical_features:
 - FLAG
 selected_features:
 - DIST
-- BDI_ADJ
-- month
 - PORT_SIZE
-- BRENT
 - weekday
-- WTI
-- year
 - SHIP_TYPE_CATEGORY
 - ARI_CO
-- DUBAI
 - DEADWEIGHT
+- year
 - BUILT
-- day
 - ARI_PO
+- DIST_diff1
 - LENGTH
 - GT
-- AIR_TEMPERATURE
 - FLAG
+- month
+- BN
