@@ -4,7 +4,6 @@ import pickle
 from pathlib import Path
 
 import hydra
-import lightgbm as lgb
 import numpy as np
 import pandas as pd
 import xgboost as xgb
@@ -54,13 +53,7 @@ def inference_models(cfg: DictConfig, test_x: pd.DataFrame) -> np.ndarray:
     ensemble_preds = []
 
     for model in tqdm(result.models.values(), total=folds, desc="Predicting models"):
-        model_pred = (
-            model.predict(test_x)
-            if isinstance(model, lgb.Booster)
-            else model.predict(xgb.DMatrix(test_x))
-            if isinstance(model, xgb.Booster)
-            else model.predict(test_x)[:, 1]
-        )
+        model_pred = model.predict(xgb.DMatrix(test_x)) if isinstance(model, xgb.Booster) else model.predict(test_x)
         # model_pred = np.where(model_pred < 0.01, 0, model_pred)
         ensemble_preds.append(model_pred)
 

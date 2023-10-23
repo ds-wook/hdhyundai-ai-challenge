@@ -3,7 +3,6 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from omegaconf import DictConfig
-from tqdm import tqdm
 
 from engine.base import BaseFeatureEngineer
 
@@ -12,7 +11,6 @@ class FeatureEngineer(BaseFeatureEngineer):
     def __init__(self, cfg: DictConfig, df: pd.DataFrame):
         super().__init__(cfg)
         df = self._add_time_features(df)
-        df = self._add_trend_features(df)
         df = self._add_basic_features(df)
         self.df = df
 
@@ -42,22 +40,12 @@ class FeatureEngineer(BaseFeatureEngineer):
 
         return df
 
-    def _add_trend_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Add trend features
-        Args:
-            df: dataframe
-        Returns:
-            dataframe
-        """
-        trend_features = ["AIR_TEMPERATURE", "DIST"]
-
-        for col in tqdm(trend_features, leave=False):
-            df[f"{col}_diff1"] = df[col] - df.groupby("ARI_PO")[col].shift(1)
-
-        return df
-
     def _add_basic_features(self, df: pd.DataFrame) -> pd.DataFrame:
-        df["DIST"] = np.log1p(df["DIST"])
-
+        df["DIST_log"] = np.log1p(df["DIST"])
+        df["DIST_Mile"] = df["DIST"] / 1.609
+        df["DIST_dev"] = (df["DIST"] - df["DIST"].mean()) ** 2
+        df["DIST_RATIO"] = df["DIST"] / df["year"]
+        df["DIST_RATIO2"] = df["DIST"] / df["month"]
+        df["DIST_RATIO3"] = df["DIST"] / df["day"]
+        df["DIST_RATIO4"] = df["DIST"] / df["hour"]
         return df

@@ -10,6 +10,7 @@ params:
   od_type: Iter
   od_wait: 500
   iterations: 10000
+  has_time: True
   allow_writing_files: False
 path: resources/models/
 name: catboost
