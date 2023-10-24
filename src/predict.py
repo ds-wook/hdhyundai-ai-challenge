@@ -11,10 +11,10 @@ from omegaconf import DictConfig
 from tqdm import tqdm
 
 from data.dataset import load_test_dataset, load_train_dataset
-from modeling.base import BaseModel
+from modeling.base import ModelResult
 
 
-def inference_models(result: BaseModel, test_x: pd.DataFrame) -> np.ndarray:
+def inference_models(result: ModelResult, test_x: pd.DataFrame) -> np.ndarray:
     """
     Given a model, predict probabilities for each class.
     Args:
