@@ -17,6 +17,16 @@ class XGBoostTrainer(BaseModel):
     def __init__(self, cfg: DictConfig):
         super().__init__(cfg)
 
+    def _huber_approx_obj(self, preds: np.ndarray, dtrain: xgb.DMatrix) -> tuple[np.ndarray, np.ndarray]:
+        d = preds - dtrain.get_label()  # remove .get_labels() for sklearn
+        h = 1  # h is delta in the graphic
+        scale = 1 + (d / h) ** 2
+        scale_sqrt = np.sqrt(scale)
+        grad = d / scale_sqrt
+        hess = 1 / scale / scale_sqrt
+
+        return grad, hess
+
     def _fit(
         self,
         X_train: pd.DataFrame | np.ndarray,
@@ -31,6 +41,7 @@ class XGBoostTrainer(BaseModel):
             dict(self.cfg.models.params),
             dtrain=dtrain,
             evals=[(dtrain, "train"), (dvalid, "eval")],
+            obj=self._huber_approx_obj,
             num_boost_round=self.cfg.models.num_boost_round,
             early_stopping_rounds=self.cfg.models.early_stopping_rounds,
             verbose_eval=self.cfg.models.verbose_eval,
@@ -82,8 +93,8 @@ class LightGBMTrainer(BaseModel):
         X_valid: pd.DataFrame | np.ndarray | None = None,
         y_valid: pd.Series | np.ndarray | None = None,
     ) -> lgb.Booster:
-        train_set = lgb.Dataset(X_train, y_train)
-        valid_set = lgb.Dataset(X_valid, y_valid)
+        train_set = lgb.Dataset(X_train, y_train, categorical_feature=self.cfg.store.categorical_features)
+        valid_set = lgb.Dataset(X_valid, y_valid, categorical_feature=self.cfg.store.categorical_features)
 
         model = lgb.train(
             train_set=train_set,

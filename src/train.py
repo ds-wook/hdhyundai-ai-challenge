@@ -18,8 +18,8 @@ def _main(cfg: DictConfig):
         save_path = Path(cfg.models.path)
 
         train_x, train_y = load_train_dataset(cfg)
-        train_x = train_x[[*cfg.store.selected_features]]
-        print(train_x.head())
+        train_x = train_x[cfg.store.selected_features]
+
         if cfg.models.name == "lightgbm":
             # train model
             lgb_trainer = LightGBMTrainer(cfg)
