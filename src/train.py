@@ -17,9 +17,9 @@ def _main(cfg: DictConfig):
         warnings.filterwarnings("ignore", category=UserWarning)
         save_path = Path(cfg.models.path)
 
-        train_x, train_y, groups = load_train_dataset(cfg)
-        train_x = train_x[cfg.store.selected_features]
-
+        train_x, train_y = load_train_dataset(cfg)
+        train_x = train_x[[*cfg.store.selected_features]]
+        print(train_x.head())
         if cfg.models.name == "lightgbm":
             # train model
             lgb_trainer = LightGBMTrainer(cfg)

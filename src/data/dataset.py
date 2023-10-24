@@ -14,13 +14,11 @@ def load_train_dataset(cfg: DictConfig) -> tuple[pd.DataFrame, pd.Series]:
     # feature engineering
     feature_engineering = FeatureEngineer(cfg, train)
     train = feature_engineering.get_train_pipeline()
-    groups = train[cfg.data.groups]
-    train = train.sort_values(by=["ATA"])
     train = train.drop(columns=[*cfg.store.drop_features])
     train_y = train[cfg.data.target]
     train_x = train.drop(columns=[cfg.data.target])
 
-    return train_x, train_y, groups
+    return train_x, train_y
 
 
 def load_test_dataset(cfg: DictConfig) -> pd.DataFrame:

@@ -5,27 +5,16 @@ drop_features:
 - U_WIND
 - V_WIND
 categorical_features:
-- SHIP_TYPE_CATEGORY
-- ARI_CO
 - ARI_PO
-- FLAG
 selected_features:
 - DIST
 - PORT_SIZE
-- DIST_RATIO2
-- weekday
-- SHIP_TYPE_CATEGORY
-- ARI_CO
-- DIST_RATIO
-- DIST_dev
-- DIST_RATIO4
-- year
-- DEADWEIGHT
-- BUILT
 - ARI_PO
+- DEADWEIGHT
 - GT
 - LENGTH
-- BN
+- DIST_log
+- DIST_dev
+- DIST_RATIO
+- DIST_RATIO2
 - DIST_RATIO3
-- FLAG
-- BREADTH

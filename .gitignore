@@ -166,3 +166,4 @@ output/*
 resources/*
 !resources/.gitkeep
 wandb/*
+*.ipynb

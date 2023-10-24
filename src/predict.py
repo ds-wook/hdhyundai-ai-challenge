@@ -64,7 +64,7 @@ def inference_models(cfg: DictConfig, test_x: pd.DataFrame) -> np.ndarray:
 
 @hydra.main(config_path="../config/", config_name="predict", version_base="1.3.1")
 def _main(cfg: DictConfig):
-    train_x, train_y, groups = load_train_dataset(cfg)
+    train_x, train_y = load_train_dataset(cfg)
     test_x = load_test_dataset(cfg)
     test_x = test_x[cfg.store.selected_features]
     submit = pd.read_csv(Path(cfg.data.path) / cfg.data.submit)

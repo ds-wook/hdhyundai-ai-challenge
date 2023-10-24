@@ -2,19 +2,17 @@ params:
   task_type: CPU
   loss_function: MAE
   eval_metric: MAE
-  learning_rate: 0.02
-  l2_leaf_reg: 0.3
-  bagging_temperature: 1
+  learning_rate: 0.05
+  l2_leaf_reg: 0.1
+  bagging_temperature: 3
   min_data_in_leaf: 57
-  max_bin: 494
   od_type: Iter
-  od_wait: 500
-  iterations: 10000
+  iterations: 20000
   has_time: True
   allow_writing_files: False
 path: resources/models/
 name: catboost
-results: 5fold-kfold-median-catboost
+results: 5fold-median-catboost
 early_stopping_rounds: 100
 seed: 42
-verbose_eval: 500
+verbose_eval: 1000

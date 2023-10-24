@@ -42,10 +42,8 @@ class FeatureEngineer(BaseFeatureEngineer):
 
     def _add_basic_features(self, df: pd.DataFrame) -> pd.DataFrame:
         df["DIST_log"] = np.log1p(df["DIST"])
-        df["DIST_Mile"] = df["DIST"] / 1.609
         df["DIST_dev"] = (df["DIST"] - df["DIST"].mean()) ** 2
         df["DIST_RATIO"] = df["DIST"] / df["year"]
         df["DIST_RATIO2"] = df["DIST"] / df["month"]
         df["DIST_RATIO3"] = df["DIST"] / df["day"]
-        df["DIST_RATIO4"] = df["DIST"] / df["hour"]
         return df
