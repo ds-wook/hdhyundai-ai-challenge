@@ -4,7 +4,6 @@ import warnings
 from pathlib import Path
 
 import hydra
-import joblib
 from omegaconf import DictConfig
 
 from data.dataset import load_train_dataset
@@ -47,9 +46,6 @@ def _main(cfg: DictConfig):
 
         elif cfg.models.name == "tabnet":
             train_x = train_x.fillna(0)
-            lgb_trainer = joblib.load(Path(cfg.models.path) / "5fold-mae-lightgbm.pkl")
-            train_x["pred"] = lgb_trainer.oof_preds
-
             # train model
             tabnet_trainer = TabNetTrainer(cfg)
             tabnet_trainer.run_cv_training(train_x, train_y)
