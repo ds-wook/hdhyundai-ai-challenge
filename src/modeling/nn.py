@@ -9,7 +9,7 @@ from modeling.base import BaseModel
 
 
 class EarlyStoppingCallback:
-    def __init__(self, min_delta: float = 0.1, patience: int = 5):
+    def __init__(self, min_delta: float = 0.1, patience: int = 5) -> None:
         self.min_delta = min_delta
         self.patience = patience
         self.best_epoch_score = 0
@@ -18,7 +18,7 @@ class EarlyStoppingCallback:
         self.best_score = None
         self.stop_training = False
 
-    def __call__(self, validation_loss: float):
+    def __call__(self, validation_loss: float) -> None:
         self.epoch_score = validation_loss
 
         if self.best_epoch_score == 0:
@@ -36,13 +36,13 @@ class EarlyStoppingCallback:
 
 
 class TabNetTrainer(BaseModel):
-    def __init__(self, cfg: DictConfig, cat_idxs: list[int] = [], cat_dims: list[int] = []):
+    def __init__(self, cfg: DictConfig, cat_idxs: list[int] = [], cat_dims: list[int] = []) -> None:
         super().__init__(cfg)
         self.cat_idxs = cat_idxs
         self.cat_dims = cat_dims
 
     def _fit(
-        self, X_train: pd.DataFrame, y_train: pd.Series, X_valid: pd.DataFrame | None, y_valid: pd.Series | None
+        self, X_train: pd.DataFrame, y_train: pd.Series, X_valid: pd.DataFrame, y_valid: pd.Series
     ) -> TabNetRegressor:
         """method train"""
         model = TabNetRegressor(

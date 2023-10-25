@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import gc
-import pickle
-from abc import ABCMeta, abstractclassmethod
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, NoReturn
 
+import joblib
 import lightgbm as lgb
 import numpy as np
 import pandas as pd
@@ -24,11 +23,10 @@ class ModelResult:
     models: dict[str, Any]
 
 
-class BaseModel(metaclass=ABCMeta):
-    def __init__(self, cfg: DictConfig) -> NoReturn:
+class BaseModel:
+    def __init__(self, cfg: DictConfig) -> None:
         self.cfg = cfg
 
-    @abstractclassmethod
     def _fit(
         self,
         X_train: pd.DataFrame | np.ndarray,
@@ -38,9 +36,8 @@ class BaseModel(metaclass=ABCMeta):
     ) -> NoReturn:
         raise NotImplementedError
 
-    def save_model(self, save_dir: Path) -> NoReturn:
-        with open(save_dir, "wb") as output:
-            pickle.dump(self.result, output, pickle.HIGHEST_PROTOCOL)
+    def save_model(self, save_dir: Path) -> None:
+        joblib.dump(self.result, save_dir)
 
     def fit(
         self,
@@ -48,12 +45,12 @@ class BaseModel(metaclass=ABCMeta):
         y_train: pd.Series | np.ndarray,
         X_valid: pd.DataFrame | np.ndarray | None = None,
         y_valid: pd.Series | np.ndarray | None = None,
-    ) -> NoReturn:
+    ) -> Any:
         model = self._fit(X_train, y_train, X_valid, y_valid)
 
         return model
 
-    def run_cv_training(self, X: pd.DataFrame | np.ndarray, y: pd.Series | np.ndarray) -> NoReturn:
+    def run_cv_training(self, X: pd.DataFrame, y: pd.Series) -> None:
         oof_preds = np.zeros(X.shape[0])
         models = {}
         kfold = KFold(n_splits=self.cfg.data.n_splits, shuffle=True, random_state=self.cfg.data.seed)

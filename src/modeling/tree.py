@@ -14,7 +14,7 @@ from modeling.base import BaseModel
 
 
 class XGBoostTrainer(BaseModel):
-    def __init__(self, cfg: DictConfig):
+    def __init__(self, cfg: DictConfig) -> None:
         super().__init__(cfg)
 
     def _huber_approx_obj(self, preds: np.ndarray, dtrain: xgb.DMatrix) -> tuple[np.ndarray, np.ndarray]:
@@ -52,7 +52,7 @@ class XGBoostTrainer(BaseModel):
 
 
 class CatBoostTrainer(BaseModel):
-    def __init__(self, cfg: DictConfig):
+    def __init__(self, cfg: DictConfig) -> None:
         super().__init__(cfg)
 
     def _fit(
@@ -82,7 +82,7 @@ class CatBoostTrainer(BaseModel):
 
 
 class LightGBMTrainer(BaseModel):
-    def __init__(self, cfg: DictConfig):
+    def __init__(self, cfg: DictConfig) -> None:
         super().__init__(cfg)
 
     def _fit(

@@ -43,10 +43,6 @@ def _main(cfg: DictConfig):
     test_x = load_test_dataset(cfg)
     test_x = test_x[cfg.store.selected_features]
 
-    if cfg.models.name == "tabnet":
-        lgb_preds = pd.read_csv(Path(cfg.output.path) / "5fold-mae-lightgbm.csv")
-        test_x["pred"] = lgb_preds
-
     submit = pd.read_csv(Path(cfg.data.path) / cfg.data.submit)
 
     preds = inference_models(result, test_x)
