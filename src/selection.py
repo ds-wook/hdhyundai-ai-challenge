@@ -14,7 +14,7 @@ from engine.select import explaniable_selected_features
 def _main(cfg: DictConfig):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=UserWarning)
-        train_x, train_y, _ = load_train_dataset(cfg)
+        train_x, train_y = load_train_dataset(cfg)
         test_x = load_test_dataset(cfg)
         save_path = Path("config/store/")
 
