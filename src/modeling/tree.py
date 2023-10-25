@@ -18,8 +18,8 @@ class XGBoostTrainer(BaseModel):
         super().__init__(cfg)
 
     def _huber_approx_obj(self, preds: np.ndarray, dtrain: xgb.DMatrix) -> tuple[np.ndarray, np.ndarray]:
-        d = preds - dtrain.get_label()  # remove .get_labels() for sklearn
-        h = 1  # h is delta in the graphic
+        d = preds - dtrain.get_label()
+        h = 1
         scale = 1 + (d / h) ** 2
         scale_sqrt = np.sqrt(scale)
         grad = d / scale_sqrt
@@ -62,11 +62,10 @@ class CatBoostTrainer(BaseModel):
         X_valid: pd.DataFrame | np.ndarray | None = None,
         y_valid: pd.Series | np.ndarray | None = None,
     ) -> CatBoostRegressor:
-        train_set = Pool(X_train, y_train, cat_features=self.cfg.store.categorical_features)
-        valid_set = Pool(X_valid, y_valid, cat_features=self.cfg.store.categorical_features)
+        train_set = Pool(X_train, y_train)
+        valid_set = Pool(X_valid, y_valid)
 
         model = CatBoostRegressor(
-            cat_features=self.cfg.store.categorical_features,
             random_state=self.cfg.models.seed,
             **self.cfg.models.params,
         )
@@ -93,8 +92,8 @@ class LightGBMTrainer(BaseModel):
         X_valid: pd.DataFrame | np.ndarray | None = None,
         y_valid: pd.Series | np.ndarray | None = None,
     ) -> lgb.Booster:
-        train_set = lgb.Dataset(X_train, y_train, categorical_feature=self.cfg.store.categorical_features)
-        valid_set = lgb.Dataset(X_valid, y_valid, categorical_feature=self.cfg.store.categorical_features)
+        train_set = lgb.Dataset(X_train, y_train)
+        valid_set = lgb.Dataset(X_valid, y_valid)
 
         model = lgb.train(
             train_set=train_set,

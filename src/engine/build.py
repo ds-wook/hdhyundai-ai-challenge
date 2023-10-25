@@ -15,10 +15,20 @@ class FeatureEngineer(BaseFeatureEngineer):
         self.df = df
 
     def get_train_pipeline(self):
+        """
+        Get train pipeline
+        Returns:
+            dataframe
+        """
         self.df = self._categorize_train_features(self.df)
         return self.df
 
     def get_test_pipeline(self):
+        """
+        Get test pipeline
+        Returns:
+            dataframe
+        """
         self.df = self._categorize_test_features(self.df)
         return self.df
 
@@ -41,9 +51,17 @@ class FeatureEngineer(BaseFeatureEngineer):
         return df
 
     def _add_basic_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Add basic features
+        Args:
+            df: dataframe
+        Returns:
+            dataframe
+        """
         df["DIST_log"] = np.log1p(df["DIST"])
         df["DIST_dev"] = (df["DIST"] - df["DIST"].mean()) ** 2
         df["DIST_RATIO"] = df["DIST"] / df["year"]
         df["DIST_RATIO2"] = df["DIST"] / df["month"]
         df["DIST_RATIO3"] = df["DIST"] / df["day"]
+
         return df

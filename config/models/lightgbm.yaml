@@ -1,8 +1,8 @@
 params:
   boosting_type: gbdt
-  objective: huber
+  objective: mae
   metric: mae
-  learning_rate: 0.3
+  learning_rate: 0.1
   num_leaves: 16
   min_data_in_leaf: 100
   bagging_fraction: 0.8
@@ -14,7 +14,7 @@ params:
   n_jobs: -1
 path: resources/models/
 name: lightgbm
-results: 5fold-huber-lightgbm
+results: 5fold-mae-lightgbm
 early_stopping_rounds: 100
 num_boost_round: 30000
 verbose_eval: 1000
