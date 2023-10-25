@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import gc
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, NoReturn
+from typing import Any
 
 import joblib
 import lightgbm as lgb
@@ -23,18 +24,19 @@ class ModelResult:
     models: dict[str, Any]
 
 
-class BaseModel:
+class BaseModel(ABC):
     def __init__(self, cfg: DictConfig) -> None:
         self.cfg = cfg
 
+    @abstractmethod
     def _fit(
         self,
         X_train: pd.DataFrame | np.ndarray,
         y_train: pd.Series | np.ndarray,
         X_valid: pd.DataFrame | np.ndarray | None = None,
         y_valid: pd.Series | np.ndarray | None = None,
-    ) -> NoReturn:
-        raise NotImplementedError
+    ):
+        ...
 
     def save_model(self, save_dir: Path) -> None:
         joblib.dump(self.result, save_dir)
