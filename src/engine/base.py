@@ -61,3 +61,15 @@ class BaseFeatureEngineer:
             test[cat_feature] = le.transform(test[cat_feature].astype(str))
 
         return test
+
+    def _one_hot_encoding(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        One hot encoding
+        Args:
+            df: dataframe
+        Returns:
+            dataframe
+        """
+        df = pd.get_dummies(df, columns=self.cfg.store.categorical_features)
+
+        return df

@@ -1,20 +1,14 @@
 drop_features:
 - ATA
-- SAMPLE_ID
-- AIR_TEMPERATURE
-- U_WIND
-- V_WIND
 categorical_features:
-- ARI_PO
+- SHIP_TYPE_CATEGORY
+- weekday
 selected_features:
+- ATA
 - DIST
 - PORT_SIZE
-- ARI_PO
 - DEADWEIGHT
 - GT
 - LENGTH
-- DIST_log
-- DIST_dev
-- DIST_RATIO
-- DIST_RATIO2
-- DIST_RATIO3
+- SHIP_TYPE_CATEGORY
+- BN

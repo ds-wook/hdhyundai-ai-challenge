@@ -20,7 +20,7 @@ class FeatureEngineer(BaseFeatureEngineer):
         Returns:
             dataframe
         """
-        self.df = self._categorize_train_features(self.df)
+        self.df = self._one_hot_encoding(self.df)
         return self.df
 
     def get_test_pipeline(self):
@@ -29,7 +29,7 @@ class FeatureEngineer(BaseFeatureEngineer):
         Returns:
             dataframe
         """
-        self.df = self._categorize_test_features(self.df)
+        self.df = self._one_hot_encoding(self.df)
         return self.df
 
     def _add_time_features(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -42,10 +42,6 @@ class FeatureEngineer(BaseFeatureEngineer):
         """
         df["ATA"] = pd.to_datetime(df["ATA"])
         df["year"] = df["ATA"].dt.year
-        df["month"] = df["ATA"].dt.month
-        df["day"] = df["ATA"].dt.day
-        df["hour"] = df["ATA"].dt.hour
-        df["minute"] = df["ATA"].dt.minute
         df["weekday"] = df["ATA"].dt.weekday
 
         return df
@@ -58,10 +54,7 @@ class FeatureEngineer(BaseFeatureEngineer):
         Returns:
             dataframe
         """
-        df["DIST_log"] = np.log1p(df["DIST"])
-        df["DIST_dev"] = (df["DIST"] - df["DIST"].mean()) ** 2
-        df["DIST_RATIO"] = df["DIST"] / df["year"]
-        df["DIST_RATIO2"] = df["DIST"] / df["month"]
-        df["DIST_RATIO3"] = df["DIST"] / df["day"]
+        # df["DIST_dev"] = (df["DIST"] - df["DIST"].mean()) ** 2/
+        df["BN_LARGER"] = df["BN"].apply(lambda x: 1 if np.abs(x) > 5 else 0)
 
         return df

@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from omegaconf import DictConfig
+from pytorch_tabnet.tab_model import TabNetRegressor
 from tqdm import tqdm
 
 from data.dataset import load_test_dataset
@@ -28,7 +29,13 @@ def inference_models(result: ModelResult, test_x: pd.DataFrame) -> np.ndarray:
     ensemble_preds = []
 
     for model in tqdm(result.models.values(), total=folds, desc="Predicting models"):
-        model_pred = model.predict(xgb.DMatrix(test_x)) if isinstance(model, xgb.Booster) else model.predict(test_x)
+        model_pred = (
+            model.predict(xgb.DMatrix(test_x))
+            if isinstance(model, xgb.Booster)
+            else model.predict(test_x.to_numpy())
+            if isinstance(model, TabNetRegressor)
+            else model.predict(test_x)
+        )
         model_pred = np.where(model_pred < 0.01, 0, model_pred)
         ensemble_preds.append(model_pred)
 
@@ -41,7 +48,6 @@ def inference_models(result: ModelResult, test_x: pd.DataFrame) -> np.ndarray:
 def _main(cfg: DictConfig):
     result = joblib.load(Path(cfg.models.path) / f"{cfg.models.results}.pkl")
     test_x = load_test_dataset(cfg)
-    test_x = test_x[cfg.store.selected_features]
 
     submit = pd.read_csv(Path(cfg.data.path) / cfg.data.submit)
 
