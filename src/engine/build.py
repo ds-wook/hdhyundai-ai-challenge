@@ -21,6 +21,10 @@ class FeatureEngineer(BaseFeatureEngineer):
             dataframe
         """
         self.df = self._one_hot_encoding(self.df)
+
+        if self.cfg.models.name == "tabnet":
+            self.df = self._standard_train_features(self.df)
+
         return self.df
 
     def get_test_pipeline(self):
@@ -30,6 +34,10 @@ class FeatureEngineer(BaseFeatureEngineer):
             dataframe
         """
         self.df = self._one_hot_encoding(self.df)
+
+        if self.cfg.models.name == "tabnet":
+            self.df = self._standard_test_features(self.df)
+
         return self.df
 
     def _add_time_features(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -54,7 +62,7 @@ class FeatureEngineer(BaseFeatureEngineer):
         Returns:
             dataframe
         """
-        # df["DIST_dev"] = (df["DIST"] - df["DIST"].mean()) ** 2/
+        # df["DIST_dev"] = (df["DIST"] - df["DIST"].mean()) ** 2
         df["BN_LARGER"] = df["BN"].apply(lambda x: 1 if np.abs(x) > 5 else 0)
 
         return df

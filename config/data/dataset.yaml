@@ -15,3 +15,10 @@ categorical_features:
   - SHIPMANAGER
   - FLAG
   - weekday
+numerical_features:
+- DIST
+- PORT_SIZE
+- DEADWEIGHT
+- GT
+- LENGTH
+- BN
